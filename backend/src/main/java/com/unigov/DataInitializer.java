@@ -3,6 +3,9 @@ package com.unigov;
 import com.unigov.entity.Role;
 import com.unigov.entity.User;
 import com.unigov.repository.UserRepository;
+import com.unigov.repository.ComplaintRepository;
+import com.unigov.repository.PollRepository;
+import com.unigov.repository.EventRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -15,17 +18,20 @@ public class DataInitializer implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(DataInitializer.class);
 
     private final UserRepository userRepository;
-    private final com.unigov.repository.ComplaintRepository complaintRepository;
-    private final com.unigov.repository.PollRepository pollRepository;
+    private final ComplaintRepository complaintRepository;
+    private final PollRepository pollRepository;
+    private final EventRepository eventRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DataInitializer(UserRepository userRepository,
-            com.unigov.repository.ComplaintRepository complaintRepository,
-            com.unigov.repository.PollRepository pollRepository,
+            ComplaintRepository complaintRepository,
+            PollRepository pollRepository,
+            EventRepository eventRepository,
             PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.complaintRepository = complaintRepository;
         this.pollRepository = pollRepository;
+        this.eventRepository = eventRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -178,6 +184,84 @@ public class DataInitializer implements CommandLineRunner {
                 pollRepository.save(p3);
                 logger.info("Poll 'Satisfaction' seeded.");
             }
+        }
+
+        // Seed Events
+        if (eventRepository.count() == 0) {
+            java.time.LocalDateTime now = java.time.LocalDateTime.now();
+            eventRepository.save(new com.unigov.entity.Event(
+                    "Réunion de Coordination",
+                    "Session de travail hebdomadaire entre les délégués et l'administration.",
+                    "Bloc A - Salle 102",
+                    now.plusDays(1).withHour(14).withMinute(0),
+                    now.plusDays(1).withHour(16).withMinute(0),
+                    com.unigov.entity.Event.EventType.MEETING));
+
+            eventRepository.save(new com.unigov.entity.Event(
+                    "Fin des Inscriptions PFE",
+                    "Dernier délai pour soumettre les formulaires de stage et PFE.",
+                    "Portail Etudiant",
+                    now.plusDays(3).withHour(23).withMinute(59),
+                    now.plusDays(3).withHour(23).withMinute(59),
+                    com.unigov.entity.Event.EventType.ACADEMIC));
+
+            eventRepository.save(new com.unigov.entity.Event(
+                    "Soirée d'intégration",
+                    "Événement festif pour accueillir les nouveaux arrivants.",
+                    "Club Etudiants",
+                    now.plusDays(5).withHour(19).withMinute(0),
+                    now.plusDays(6).withHour(0).withMinute(0),
+                    com.unigov.entity.Event.EventType.SOCIAL));
+
+            eventRepository.save(new com.unigov.entity.Event(
+                    "Examen de Rattrapage",
+                    "Session exceptionnelle pour les modules du S1.",
+                    "Amphi Carthage",
+                    now.plusDays(10).withHour(9).withMinute(0),
+                    now.plusDays(10).withHour(12).withMinute(0),
+                    com.unigov.entity.Event.EventType.EXAM));
+
+            logger.info("=== Events seeded ===");
+        }
+    }
+
+    public void seedUsers() {
+        logger.info("Manually seeding default users...");
+
+        // Admin
+        if (userRepository.findByUsername("admin").isEmpty()) {
+            User admin = new User();
+            admin.setUsername("admin");
+            admin.setEmail("admin@unigov.com");
+            admin.setPassword(passwordEncoder.encode("admin123"));
+            admin.setFullName("Administrator");
+            admin.setRole(Role.ROLE_ADMIN);
+            userRepository.save(admin);
+            logger.info("Admin account created.");
+        }
+
+        // Delegate 1
+        if (userRepository.findByUsername("mouhib_fahem").isEmpty()) {
+            User delegue1 = new User();
+            delegue1.setUsername("mouhib_fahem");
+            delegue1.setEmail("mouhib.fahem28@gmail.com");
+            delegue1.setPassword(passwordEncoder.encode("mouhib"));
+            delegue1.setFullName("Mouhib Fahem");
+            delegue1.setRole(Role.ROLE_DELEGUE);
+            userRepository.save(delegue1);
+            logger.info("Delegate 'mouhib_fahem' created.");
+        }
+
+        // Delegate 2
+        if (userRepository.findByUsername("wiem_tamboura").isEmpty()) {
+            User delegue2 = new User();
+            delegue2.setUsername("wiem_tamboura");
+            delegue2.setEmail("wiem.tamboura@unigov.com");
+            delegue2.setPassword(passwordEncoder.encode("wiem"));
+            delegue2.setFullName("Wiem Tamboura");
+            delegue2.setRole(Role.ROLE_DELEGUE);
+            userRepository.save(delegue2);
+            logger.info("Delegate 'wiem_tamboura' created.");
         }
     }
 }

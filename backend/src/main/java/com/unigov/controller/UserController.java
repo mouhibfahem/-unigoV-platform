@@ -1,5 +1,6 @@
 package com.unigov.controller;
 
+import com.unigov.DataInitializer;
 import com.unigov.entity.User;
 import com.unigov.repository.UserRepository;
 import com.unigov.security.UserDetailsImpl;
@@ -32,6 +33,9 @@ public class UserController {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Autowired
+    DataInitializer dataInitializer;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -117,5 +121,11 @@ public class UserController {
                 put("message", "Profile updated successfully");
             }
         });
+    }
+
+    @PostMapping("/seed")
+    public ResponseEntity<?> manualSeed() {
+        dataInitializer.seedUsers();
+        return ResponseEntity.ok("Seeding complete. Check contacts again.");
     }
 }

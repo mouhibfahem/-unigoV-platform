@@ -17,10 +17,11 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     List<Message> findConversation(@Param("u1") User u1, @Param("u2") User u2);
 
     // Find all unique users a specific user has exchanged messages with
-    @Query("SELECT DISTINCT m.sender FROM Message m WHERE m.recipient = :user " +
+    @Query(value = "SELECT * FROM users WHERE id IN (" +
+            "SELECT DISTINCT sender_id FROM messages WHERE recipient_id = :userId " +
             "UNION " +
-            "SELECT DISTINCT m.recipient FROM Message m WHERE m.sender = :user")
-    List<User> findUsersInConversationWith(@Param("user") User user);
+            "SELECT DISTINCT recipient_id FROM messages WHERE sender_id = :userId)", nativeQuery = true)
+    List<User> findParticipantIdsInConversationWith(@Param("userId") Long userId);
 
     // Count unread messages for a specific recipient from a specific sender
     long countByRecipientAndSenderAndIsReadFalse(User recipient, User sender);

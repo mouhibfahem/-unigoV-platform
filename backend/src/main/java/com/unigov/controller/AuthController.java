@@ -1,5 +1,6 @@
 package com.unigov.controller;
 
+import com.unigov.DataInitializer;
 import com.unigov.dto.AuthDtos.*;
 import com.unigov.entity.Role;
 import com.unigov.entity.User;
@@ -32,6 +33,9 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
+    @Autowired
+    DataInitializer dataInitializer;
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -48,7 +52,9 @@ public class AuthController {
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
-                role));
+                role,
+                userDetails.getFullName(),
+                userDetails.getProfilePhoto()));
     }
 
     @PostMapping("/signup")
@@ -95,5 +101,11 @@ public class AuthController {
         userRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    }
+
+    @PostMapping("/seed")
+    public ResponseEntity<?> manualSeed() {
+        dataInitializer.seedUsers();
+        return ResponseEntity.ok("Seeding complete. Check contacts again.");
     }
 }

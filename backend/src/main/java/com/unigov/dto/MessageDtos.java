@@ -245,4 +245,92 @@ public class MessageDtos {
             }
         }
     }
+
+    public static class ContactResponse {
+        private Long id;
+        private String username;
+        private String fullName;
+        private String role;
+        private String profilePhoto;
+
+        public ContactResponse() {
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getFullName() {
+            return fullName;
+        }
+
+        public void setFullName(String fullName) {
+            this.fullName = fullName;
+        }
+
+        public String getRole() {
+            return role;
+        }
+
+        public void setRole(String role) {
+            this.role = role;
+        }
+
+        public String getProfilePhoto() {
+            return profilePhoto;
+        }
+
+        public void setProfilePhoto(String profilePhoto) {
+            this.profilePhoto = profilePhoto;
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public static class Builder {
+            private ContactResponse instance = new ContactResponse();
+
+            public Builder id(Long id) {
+                instance.id = id;
+                return this;
+            }
+
+            public Builder username(String username) {
+                instance.username = username;
+                return this;
+            }
+
+            public Builder fullName(String fullName) {
+                instance.fullName = fullName;
+                return this;
+            }
+
+            public Builder role(String role) {
+                instance.role = role;
+                return this;
+            }
+
+            public Builder profilePhoto(String profilePhoto) {
+                instance.profilePhoto = profilePhoto;
+                return this;
+            }
+
+            public ContactResponse build() {
+                return instance;
+            }
+        }
+    }
 }

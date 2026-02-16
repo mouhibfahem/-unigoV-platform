@@ -17,6 +17,10 @@ api.getConversationHistory = (userId) => api.get(`/messages/history/${userId}`);
 api.sendMessage = (data) => api.post('/messages', data);
 api.getContacts = () => api.get('/messages/contacts');
 
+// Agenda / Events
+api.getUpcomingEvents = () => api.get('/events/upcoming');
+api.createEvent = (data) => api.post('/events', data);
+
 api.interceptors.request.use((config) => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (user && user.token) {

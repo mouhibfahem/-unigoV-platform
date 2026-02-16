@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import { Send, Search, Paperclip, MoreHorizontal, Smile, Check, CheckCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import EmojiPicker from 'emoji-picker-react';
+import api from '../services/api';
 
 const MessagingPage = () => {
     const { user } = useAuth();
@@ -14,6 +15,9 @@ const MessagingPage = () => {
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isStartingNew, setIsStartingNew] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [sending, setSending] = useState(false);
+    const messagesEndRef = useRef(null);
 
     const onEmojiClick = (emojiObject) => {
         setMessage((prevMsg) => prevMsg + emojiObject.emoji);
@@ -54,25 +58,38 @@ const MessagingPage = () => {
         }
     };
 
-    useState(() => {
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
+
+    useEffect(() => {
         fetchConversations();
         fetchPossibleContacts();
     }, []);
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
-        if (!message.trim() || !activeContact) return;
+        if (!message.trim() || !activeContact || sending) return;
 
+        setSending(true);
         try {
+            const userId = activeContact.otherUserId || activeContact.id;
             await api.sendMessage({
                 content: message,
-                recipientId: activeContact.otherUserId || activeContact.id
+                recipientId: userId
             });
             setMessage('');
-            fetchHistory(activeContact.otherUserId || activeContact.id);
+            await fetchHistory(userId);
             fetchConversations();
         } catch (err) {
             console.error('Failed to send message:', err);
+            alert("Erreur lors de l'envoi. Vérifiez les droits.");
+        } finally {
+            setSending(false);
         }
     };
 
@@ -102,6 +119,8 @@ const MessagingPage = () => {
                             <input
                                 type="text"
                                 placeholder="Rechercher..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
                                 className="w-full bg-slate-50 dark:bg-slate-800 text-xs py-2.5 pl-9 pr-4 rounded-xl border-none focus:ring-1 focus:ring-primary-500 outline-none dark:text-slate-200"
                             />
                         </div>
@@ -111,61 +130,110 @@ const MessagingPage = () => {
                             <div className="p-8 text-center text-slate-400 text-sm">Chargement...</div>
                         ) : isStartingNew ? (
                             <div className="p-2 space-y-1">
-                                <p className="px-4 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nouveau Discussion</p>
-                                {contacts.map((c) => (
-                                    <div
-                                        key={c.id}
-                                        onClick={() => {
-                                            handleSelectContact(c);
-                                            setIsStartingNew(false);
-                                        }}
-                                        className="p-3 mx-2 flex items-center gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-xl transition-all"
-                                    >
-                                        <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold uppercase text-xs">
-                                            {c.fullName?.charAt(0) || c.username?.charAt(0)}
+                                <p className="px-4 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nouvelle Discussion</p>
+                                {contacts
+                                    .filter(c => {
+                                        const query = searchQuery.toLowerCase();
+                                        return (c.fullName?.toLowerCase().includes(query) ||
+                                            c.username?.toLowerCase().includes(query));
+                                    })
+                                    .map((c) => (
+                                        <div
+                                            key={c.id}
+                                            onClick={() => {
+                                                handleSelectContact(c);
+                                                setIsStartingNew(false);
+                                                setSearchQuery('');
+                                            }}
+                                            className="p-3 mx-2 flex items-center gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-xl transition-all"
+                                        >
+                                            <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold uppercase text-xs">
+                                                {c.fullName?.charAt(0) || c.username?.charAt(0)}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-bold text-slate-800 dark:text-slate-100 text-sm truncate">{c.fullName || c.username || 'Utilisateur'}</p>
+                                                <p className="text-[10px] text-primary-600 font-medium">{(c.role || "").replace('ROLE_', '')}</p>
+                                            </div>
                                         </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="font-bold text-slate-800 dark:text-slate-100 text-sm truncate">{c.fullName || c.username}</p>
-                                            <p className="text-[10px] text-primary-600 font-medium">{c.role.replace('ROLE_', '')}</p>
+                                    ))}
+                                {contacts.filter(c => {
+                                    const query = searchQuery.toLowerCase();
+                                    return (c.fullName?.toLowerCase().includes(query) ||
+                                        c.username?.toLowerCase().includes(query));
+                                }).length === 0 && (
+                                        <div className="p-8 text-center space-y-4">
+                                            <p className="text-slate-400 text-xs italic">Aucun contact trouvé.</p>
+                                            <div className="pt-4 border-t border-slate-50 dark:border-slate-800">
+                                                <p className="text-[10px] text-slate-500 uppercase font-bold">Diagnostic</p>
+                                                <p className="text-[10px] text-slate-400">Contacts reçus: {contacts.length}</p>
+                                                <p className="text-[10px] text-slate-400">Votre rôle: {user?.role}</p>
+                                                <p className="text-[10px] text-slate-400">Utilisateur: {user?.username}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    )}
                             </div>
                         ) : conversations.length > 0 ? (
-                            conversations.map((c) => (
-                                <div
-                                    key={c.otherUserId}
-                                    onClick={() => handleSelectContact(c)}
-                                    className={`p-4 flex items-center gap-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-l-4 ${activeContact?.id === c.otherUserId || activeContact?.otherUserId === c.otherUserId ? 'bg-primary-50/30 dark:bg-primary-900/10 border-primary-600' : 'border-transparent'}`}
-                                >
-                                    <div className="relative">
-                                        <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold uppercase">
-                                            {c.otherUserName.charAt(0)}
+                            conversations
+                                .filter(c => (c.otherUserName || "").toLowerCase().includes(searchQuery.toLowerCase()))
+                                .map((c) => (
+                                    <div
+                                        key={c.otherUserId}
+                                        onClick={() => handleSelectContact(c)}
+                                        className={`p-4 flex items-center gap-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-l-4 ${activeContact?.id === c.otherUserId || activeContact?.otherUserId === c.otherUserId ? 'bg-primary-50/30 dark:bg-primary-900/10 border-primary-600' : 'border-transparent'}`}
+                                    >
+                                        <div className="relative">
+                                            <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold uppercase">
+                                                {(c.otherUserName || "?").charAt(0)}
+                                            </div>
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center justify-between mb-0.5">
+                                                <span className="font-bold text-slate-800 dark:text-slate-100 text-sm truncate">{c.otherUserName}</span>
+                                                <span className="text-[10px] text-slate-400 font-medium">
+                                                    {c.lastTimestamp ? new Date(c.lastTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <p className="text-xs text-slate-500 dark:text-slate-400 truncate pr-2">{c.lastMessage}</p>
+                                                {c.unreadCount > 0 && <span className="w-4 h-4 bg-primary-600 text-white text-[8px] font-bold rounded-full flex items-center justify-center">{c.unreadCount}</span>}
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center justify-between mb-0.5">
-                                            <span className="font-bold text-slate-800 dark:text-slate-100 text-sm truncate">{c.otherUserName}</span>
-                                            <span className="text-[10px] text-slate-400 font-medium">
-                                                {new Date(c.lastTimestamp).toLocaleTimeString([], { hour: '2d', minute: '2d' })}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                            <p className="text-xs text-slate-500 dark:text-slate-400 truncate pr-2">{c.lastMessage}</p>
-                                            {c.unreadCount > 0 && <span className="w-4 h-4 bg-primary-600 text-white text-[8px] font-bold rounded-full flex items-center justify-center">{c.unreadCount}</span>}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
+                                ))
                         ) : (
-                            <div className="p-8 text-center text-slate-400 text-sm">
-                                <p>Aucune conversation.</p>
-                                <button
-                                    onClick={fetchPossibleContacts}
-                                    className="mt-4 text-xs text-primary-600 font-bold hover:underline"
-                                >
-                                    Démarrer une discussion
-                                </button>
+                            <div className="p-8 text-center">
+                                <div className="mb-6">
+                                    <p className="text-slate-400 text-sm mb-2">Aucune conversation.</p>
+                                    <button
+                                        onClick={() => setIsStartingNew(true)}
+                                        className="text-xs text-primary-600 font-bold hover:underline"
+                                    >
+                                        Démarrer une discussion
+                                    </button>
+                                </div>
+
+                                {contacts.length > 0 && (
+                                    <div className="text-left">
+                                        <p className="px-4 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 border-t border-slate-50 dark:border-slate-800 pt-6">Suggestions</p>
+                                        <div className="space-y-1">
+                                            {contacts.slice(0, 3).map((c) => (
+                                                <div
+                                                    key={c.id}
+                                                    onClick={() => handleSelectContact(c)}
+                                                    className="p-3 mx-2 flex items-center gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-xl transition-all border border-transparent hover:border-primary-100 dark:hover:border-primary-900/30"
+                                                >
+                                                    <div className="w-9 h-9 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold uppercase text-xs">
+                                                        {c.fullName?.charAt(0) || c.username?.charAt(0)}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="font-bold text-slate-800 dark:text-slate-100 text-xs truncate">{c.fullName || c.username || 'Utilisateur'}</p>
+                                                        <p className="text-[9px] text-slate-500 font-medium">{(c.role || "").replace('ROLE_', '')}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
@@ -202,23 +270,24 @@ const MessagingPage = () => {
                             {/* Messages Area */}
                             <div className="flex-1 p-8 overflow-y-auto space-y-6 bg-slate-50/30 dark:bg-slate-950/20">
                                 {messages.map((m) => (
-                                    <div key={m.id} className={`flex ${m.senderUsername === user.username ? 'justify-end' : 'justify-start'}`}>
-                                        <div className={`max-w-[70%] p-4 rounded-2xl shadow-sm relative group ${m.senderUsername === user.username
+                                    <div key={m.id} className={`flex ${m.senderUsername === user?.username ? 'justify-end' : 'justify-start'}`}>
+                                        <div className={`max-w-[70%] p-4 rounded-2xl shadow-sm relative group ${m.senderUsername === user?.username
                                             ? 'bg-primary-600 text-white rounded-tr-none shadow-primary-200 dark:shadow-none'
                                             : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-tl-none border border-slate-100 dark:border-slate-700'
                                             }`}>
                                             <p className="text-sm leading-relaxed">{m.content}</p>
                                             <div className={`flex items-center justify-end gap-1 mt-2 ${m.senderUsername === user.username ? 'text-primary-200' : 'text-slate-400'}`}>
                                                 <span className="text-[9px] font-bold uppercase tracking-tighter">
-                                                    {new Date(m.timestamp).toLocaleTimeString([], { hour: '2d', minute: '2d' })}
+                                                    {m.timestamp ? new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
                                                 </span>
-                                                {m.senderUsername === user.username && (
+                                                {m.senderUsername === user?.username && (
                                                     m.isRead ? <CheckCheck size={12} /> : <Check size={12} />
                                                 )}
                                             </div>
                                         </div>
                                     </div>
                                 ))}
+                                <div ref={messagesEndRef} />
                             </div>
 
                             {/* Chat Input */}
@@ -255,8 +324,12 @@ const MessagingPage = () => {
                                     >
                                         <Smile size={20} />
                                     </button>
-                                    <button type="submit" className="bg-primary-600 text-white p-2.5 rounded-xl hover:bg-primary-700 transition-all shadow-lg shadow-primary-200 dark:shadow-none scale-100 active:scale-95">
-                                        <Send size={20} />
+                                    <button
+                                        type="submit"
+                                        disabled={sending || !message.trim()}
+                                        className={`p-2.5 rounded-xl transition-all shadow-lg scale-100 active:scale-95 ${sending || !message.trim() ? 'bg-slate-300 cursor-not-allowed shadow-none' : 'bg-primary-600 text-white hover:bg-primary-700 shadow-primary-200 dark:shadow-none'}`}
+                                    >
+                                        <Send size={20} className={sending ? 'animate-pulse' : ''} />
                                     </button>
                                 </div>
                             </form>

@@ -1,7 +1,6 @@
 package com.unigov.controller;
 
 import com.unigov.dto.MessageDtos.*;
-import com.unigov.entity.User;
 import com.unigov.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +32,7 @@ public class MessageController {
     }
 
     @GetMapping("/contacts")
-    public ResponseEntity<List<User>> getAvailableContacts(Principal principal) {
+    public ResponseEntity<List<ContactResponse>> getAvailableContacts(Principal principal) {
         return ResponseEntity.ok(messageService.getAvailableContacts(principal.getName()));
     }
 }

@@ -9,8 +9,10 @@ import {
     MessageSquare,
     ArrowRight,
     AlertTriangle,
-    CheckCircle2
+    CheckCircle2,
+    Calendar
 } from 'lucide-react';
+import Agenda from '../components/Agenda';
 
 const HomePage = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -132,6 +134,17 @@ const HomePage = () => {
                             </div>
                         </Link>
                     ))}
+                </div>
+
+                {/* Agenda Section */}
+                <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight">Agenda UniGov</h2>
+                            <p className="text-slate-500 font-bold text-sm">Ne manquez aucun événement important</p>
+                        </div>
+                    </div>
+                    <Agenda />
                 </div>
 
                 {/* Main CTA */}
