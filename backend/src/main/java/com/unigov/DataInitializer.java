@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import java.util.ArrayList;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -138,25 +139,24 @@ public class DataInitializer implements CommandLineRunner {
                 com.unigov.entity.Poll p1 = new com.unigov.entity.Poll();
                 p1.setQuestion(q1);
                 p1.setCreator(delegue);
+                p1.setOptions(new ArrayList<>()); // Start empty
+                pollRepository.save(p1); // Save first to get an ID
 
                 com.unigov.entity.PollOption p1o1 = new com.unigov.entity.PollOption();
                 p1o1.setText("Oui, c'est indispensable");
                 p1o1.setPoll(p1);
                 p1o1.setVotes(45);
+                pollOptionRepository.save(p1o1);
 
                 com.unigov.entity.PollOption p1o2 = new com.unigov.entity.PollOption();
                 p1o2.setText("Non, je préfère finir plus tôt");
                 p1o2.setPoll(p1);
                 p1o2.setVotes(12);
+                pollOptionRepository.save(p1o2);
 
                 p1.getOptions().add(p1o1);
                 p1.getOptions().add(p1o2);
-
-                // Save options first to avoid DBRef error
-                pollOptionRepository.save(p1o1);
-                pollOptionRepository.save(p1o2);
-
-                pollRepository.save(p1);
+                pollRepository.save(p1); // Update with options
                 logger.info("Poll 'Revision Week' seeded.");
             }
 
@@ -166,6 +166,8 @@ public class DataInitializer implements CommandLineRunner {
                 com.unigov.entity.Poll p2 = new com.unigov.entity.Poll();
                 p2.setQuestion(q2);
                 p2.setCreator(delegue);
+                p2.setOptions(new ArrayList<>());
+                pollRepository.save(p2); // Save first
 
                 String[] p2opts = { "Plus de choix de plats", "Paiement mobile", "Micro-ondes", "Autre" };
                 for (String opt : p2opts) {
@@ -173,10 +175,10 @@ public class DataInitializer implements CommandLineRunner {
                     o.setText(opt);
                     o.setPoll(p2);
                     o.setVotes((int) (Math.random() * 30));
-                    pollOptionRepository.save(o); // Persist first
+                    pollOptionRepository.save(o); // Save each option
                     p2.getOptions().add(o);
                 }
-                pollRepository.save(p2);
+                pollRepository.save(p2); // Update parent
                 logger.info("Poll 'Cafeteria' seeded.");
             }
 
@@ -186,6 +188,8 @@ public class DataInitializer implements CommandLineRunner {
                 com.unigov.entity.Poll p3 = new com.unigov.entity.Poll();
                 p3.setQuestion(q3);
                 p3.setCreator(delegue);
+                p3.setOptions(new ArrayList<>());
+                pollRepository.save(p3); // Save first
 
                 String[] p3opts = { "Excellente", "Bonne", "Passable", "Mauvaise" };
                 for (String opt : p3opts) {
@@ -193,10 +197,10 @@ public class DataInitializer implements CommandLineRunner {
                     o.setText(opt);
                     o.setPoll(p3);
                     o.setVotes((int) (Math.random() * 25));
-                    pollOptionRepository.save(o); // Persist first
+                    pollOptionRepository.save(o); // Save each option
                     p3.getOptions().add(o);
                 }
-                pollRepository.save(p3);
+                pollRepository.save(p3); // Update parent
                 logger.info("Poll 'Satisfaction' seeded.");
             }
         }
