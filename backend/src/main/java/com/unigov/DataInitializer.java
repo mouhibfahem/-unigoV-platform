@@ -8,6 +8,8 @@ import com.unigov.repository.PollRepository;
 import com.unigov.repository.EventRepository;
 import com.unigov.repository.DecisionRepository;
 import com.unigov.repository.PollOptionRepository;
+import com.unigov.repository.AnnouncementRepository;
+import com.unigov.entity.Announcement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -26,6 +28,7 @@ public class DataInitializer implements CommandLineRunner {
     private final EventRepository eventRepository;
     private final DecisionRepository decisionRepository;
     private final PollOptionRepository pollOptionRepository;
+    private final AnnouncementRepository announcementRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DataInitializer(UserRepository userRepository,
@@ -34,6 +37,7 @@ public class DataInitializer implements CommandLineRunner {
             EventRepository eventRepository,
             DecisionRepository decisionRepository,
             PollOptionRepository pollOptionRepository,
+            AnnouncementRepository announcementRepository,
             PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.complaintRepository = complaintRepository;
@@ -41,6 +45,7 @@ public class DataInitializer implements CommandLineRunner {
         this.eventRepository = eventRepository;
         this.decisionRepository = decisionRepository;
         this.pollOptionRepository = pollOptionRepository;
+        this.announcementRepository = announcementRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -258,6 +263,32 @@ public class DataInitializer implements CommandLineRunner {
                     "Adoption de la nouvelle charte de conduite visant à améliorer le respect mutuel.",
                     "Discipline"));
             logger.info("=== Decisions seeded ===");
+        }
+
+        // Seed Announcements
+        if (announcementRepository.count() == 0 && delegue != null) {
+            Announcement a1 = new Announcement();
+            a1.setTitle("Bienvenue sur la plateforme UniGov !");
+            a1.setContent(
+                    "Nous sommes ravis de lancer ce nouvel espace de communication pour tous les étudiants. Explorez les sondages et exprimez-vous !");
+            a1.setDelegate(delegue);
+            announcementRepository.save(a1);
+
+            Announcement a2 = new Announcement();
+            a2.setTitle("Rappel : Inscriptions aux Clubs");
+            a2.setContent(
+                    "Le délai pour s'inscrire aux différents clubs de l'ENICarthage est fixé à vendredi prochain. Ne tardez pas !");
+            a2.setDelegate(delegue);
+            announcementRepository.save(a2);
+
+            Announcement a3 = new Announcement();
+            a3.setTitle("Maintenance prévue du Portail");
+            a3.setContent(
+                    "Le portail subira une courte maintenance ce dimanche à 22h pour améliorer les performances du système de messagerie.");
+            a3.setDelegate(delegue);
+            announcementRepository.save(a3);
+
+            logger.info("=== Announcements seeded ===");
         }
     }
 
