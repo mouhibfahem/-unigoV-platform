@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
 import { useTheme } from '../context/ThemeContext';
 import {
     User,
@@ -17,10 +18,11 @@ import {
 } from 'lucide-react';
 
 const SettingsPage = () => {
-    const { user } = useAuth();
+    const { user, updateUser } = useAuth();
     const { darkMode, toggleTheme } = useTheme();
     const [activeTab, setActiveTab] = useState('profile');
     const [saved, setSaved] = useState(false);
+    const [showLightbox, setShowLightbox] = useState(false);
 
     const [formData, setFormData] = useState({
         fullName: user?.fullName || '',
@@ -30,10 +32,42 @@ const SettingsPage = () => {
         confirmPassword: ''
     });
 
-    const handleSave = (e) => {
+    const handleSave = async (e) => {
         e.preventDefault();
-        setSaved(true);
-        setTimeout(() => setSaved(false), 3000);
+        try {
+            await api.updateProfile({
+                fullName: formData.fullName,
+                email: formData.email
+            });
+            updateUser({ fullName: formData.fullName, email: formData.email });
+            setSaved(true);
+            setTimeout(() => setSaved(false), 3000);
+        } catch (error) {
+            console.error(error);
+            alert("Erreur lors de la mise à jour");
+        }
+    };
+
+    const fileInputRef = React.useRef(null);
+
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const data = new FormData();
+        data.append('file', file);
+
+        try {
+            const response = await api.uploadPhoto(data);
+            const photoUrl = response.data.profilePhoto;
+
+            // Update local user state immediately
+            updateUser({ profilePhoto: photoUrl });
+        } catch (error) {
+            console.error("Error uploading photo:", error);
+            const errorMessage = error.response?.data?.message || error.response?.data || error.message;
+            alert(`Erreur upload: ${errorMessage}`);
+        }
     };
 
     const tabs = [
@@ -53,8 +87,8 @@ const SettingsPage = () => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeTab === tab.id
-                                    ? 'bg-primary-600 text-white shadow-lg shadow-primary-200 dark:shadow-none translate-x-1'
-                                    : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
+                                ? 'bg-primary-600 text-white shadow-lg shadow-primary-200 dark:shadow-none translate-x-1'
+                                : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
                                 }`}
                         >
                             <tab.icon size={20} />
@@ -70,18 +104,66 @@ const SettingsPage = () => {
                             <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                                 <div className="flex items-center gap-6 mb-8">
                                     <div className="relative group">
-                                        <div className="w-24 h-24 bg-primary-100 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center text-primary-600 dark:text-primary-400 text-3xl font-bold border-4 border-white dark:border-slate-800 shadow-md">
-                                            {user?.fullName?.charAt(0) || 'U'}
+                                        <div
+                                            className="w-24 h-24 bg-primary-100 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center text-primary-600 dark:text-primary-400 text-3xl font-bold border-4 border-white dark:border-slate-800 shadow-md overflow-hidden cursor-pointer"
+                                            onClick={() => user?.profilePhoto && setShowLightbox(true)}
+                                        >
+                                            {user?.profilePhoto ? (
+                                                <img
+                                                    src={user.profilePhoto.startsWith('http') ? user.profilePhoto : `http://localhost:8081/uploads/${user.profilePhoto}`}
+                                                    alt="Profile"
+                                                    className="w-full h-full object-cover transition-transform hover:scale-110"
+                                                />
+                                            ) : (
+                                                user?.fullName?.charAt(0) || 'U'
+                                            )}
                                         </div>
-                                        <button className="absolute -bottom-2 -right-2 p-2 bg-white dark:bg-slate-700 shadow-lg rounded-xl text-slate-600 dark:text-slate-300 hover:text-primary-600 transition-colors border border-slate-100 dark:border-slate-600">
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                fileInputRef.current.click();
+                                            }}
+                                            className="absolute -bottom-2 -right-2 p-2 bg-white dark:bg-slate-700 shadow-lg rounded-xl text-slate-600 dark:text-slate-300 hover:text-primary-600 transition-colors border border-slate-100 dark:border-slate-600 z-10"
+                                        >
                                             <Camera size={16} />
                                         </button>
+                                        <input
+                                            type="file"
+                                            ref={fileInputRef}
+                                            onChange={handleFileChange}
+                                            className="hidden"
+                                            accept="image/*"
+                                        />
                                     </div>
                                     <div>
                                         <h3 className="text-xl font-bold text-slate-800 dark:text-white">{user?.fullName}</h3>
-                                        <p className="text-slate-500 font-medium">{user?.role === 'ROLE_ADMIN' ? 'Administrateur' : 'Étudiant'}</p>
+                                        <p className="text-slate-500 font-medium">{user?.role === 'ROLE_ADMIN' ? 'Administrateur' : user?.username || 'Étudiant'}</p>
                                     </div>
                                 </div>
+
+                                {/* Lightbox Modal */}
+                                {showLightbox && user?.profilePhoto && (
+                                    <div
+                                        className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
+                                        onClick={() => setShowLightbox(false)}
+                                    >
+                                        <div className="relative max-w-4xl max-h-[90vh]">
+                                            <img
+                                                src={user.profilePhoto.startsWith('http') ? user.profilePhoto : `http://localhost:8081/uploads/${user.profilePhoto}`}
+                                                alt="Profile Full Size"
+                                                className="max-w-full max-h-[90vh] rounded-lg shadow-2xl"
+                                                onClick={(e) => e.stopPropagation()}
+                                            />
+                                            <button
+                                                className="absolute -top-12 right-0 text-white hover:text-primary-400 transition-colors"
+                                                onClick={() => setShowLightbox(false)}
+                                            >
+                                                <span className="text-sm font-bold uppercase tracking-widest">Fermer</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
 
                                 <form onSubmit={handleSave} className="space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

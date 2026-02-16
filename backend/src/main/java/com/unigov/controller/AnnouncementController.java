@@ -17,9 +17,9 @@ public class AnnouncementController {
     @Autowired
     private AnnouncementService announcementService;
 
-    @PostMapping
+    @PostMapping(consumes = { "multipart/form-data" })
     @PreAuthorize("hasAnyRole('DELEGUE', 'ADMIN')")
-    public ResponseEntity<AnnouncementResponse> createAnnouncement(@RequestBody AnnouncementRequest request,
+    public ResponseEntity<AnnouncementResponse> createAnnouncement(@ModelAttribute AnnouncementRequest request,
             Principal principal) {
         return ResponseEntity.ok(announcementService.createAnnouncement(request, principal.getName()));
     }

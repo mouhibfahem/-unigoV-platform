@@ -8,6 +8,7 @@ import ComplaintsPage from './pages/ComplaintsPage';
 import AnnouncementsPage from './pages/AnnouncementsPage';
 import PollsPage from './pages/PollsPage';
 import RegulationsPage from './pages/RegulationsPage';
+import ProceduresPage from './pages/ProceduresPage';
 import MessagingPage from './pages/MessagingPage';
 import SettingsPage from './pages/SettingsPage';
 import HomePage from './pages/HomePage';
@@ -50,6 +51,11 @@ const App = () => {
                         <Route path="/regulations" element={
                             <ProtectedRoute>
                                 <RegulationsPage />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/procedures" element={
+                            <ProtectedRoute>
+                                <ProceduresPage />
                             </ProtectedRoute>
                         } />
                         <Route path="/messaging" element={

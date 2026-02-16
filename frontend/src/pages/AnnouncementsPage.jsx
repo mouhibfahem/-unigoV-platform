@@ -29,12 +29,22 @@ const AnnouncementsPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/announcements', formData);
+            const data = new FormData();
+            data.append('title', formData.title);
+            data.append('content', formData.content);
+            if (formData.file) {
+                data.append('file', formData.file);
+            }
+
+            await api.post('/announcements', data);
             setShowForm(false);
             setFormData({ title: '', content: '' });
             fetchAnnouncements();
         } catch (err) {
-            alert('Failed to post announcement');
+            console.error('Failed to post announcement:', err.response || err);
+            const status = err.response?.status;
+            const message = err.response?.data?.message || err.response?.data?.error || err.message;
+            alert(`Échec de publication: ${status ? 'Erreur ' + status : ''} ${message}`);
         }
     };
 
@@ -75,6 +85,12 @@ const AnnouncementsPage = () => {
                                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                                 required
                             ></textarea>
+                            <input
+                                type="file"
+                                className="input p-2"
+                                onChange={(e) => setFormData({ ...formData, file: e.target.files[0] })}
+                                accept="image/*,.pdf"
+                            />
                             <div className="flex justify-end gap-3">
                                 <button type="button" onClick={() => setShowForm(false)} className="px-6 py-2 text-slate-600 font-medium hover:bg-slate-50 rounded-lg">Annuler</button>
                                 <button type="submit" className="btn-primary px-8">Publier</button>
@@ -102,6 +118,29 @@ const AnnouncementsPage = () => {
                                 </div>
                                 <h4 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4 leading-tight group-hover:text-primary-600 transition-colors">{announcement.title}</h4>
                                 <p className="text-slate-500 dark:text-slate-400 text-sm flex-1 leading-relaxed whitespace-pre-wrap mb-6">{announcement.content}</p>
+
+                                {announcement.attachmentUrl && (
+                                    <div className="mb-6">
+                                        {announcement.attachmentUrl.toLowerCase().endsWith('.pdf') ? (
+                                            <a
+                                                href={`http://localhost:8081/uploads/${announcement.attachmentUrl}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-2 p-3 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors font-medium text-sm border border-red-100"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /><path d="M10 13l-2-2m0 0l2-2m-2 2h8m-2 4l2 2m0 0l2-2m-2 2v-8" /></svg>
+                                                Voir le document PDF
+                                            </a>
+                                        ) : (
+                                            <img
+                                                src={`http://localhost:8081/uploads/${announcement.attachmentUrl}`}
+                                                alt="Attachment"
+                                                className="w-full h-48 object-cover rounded-lg border border-slate-100"
+                                            />
+                                        )}
+                                    </div>
+                                )}
+
                                 <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-50 dark:border-slate-800">
                                     <div className="flex items-center gap-3">
                                         <div className="w-8 h-8 bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-lg flex items-center justify-center font-bold text-xs uppercase">

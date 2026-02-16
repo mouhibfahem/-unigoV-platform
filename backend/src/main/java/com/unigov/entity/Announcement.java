@@ -24,6 +24,8 @@ public class Announcement {
     @JoinColumn(name = "delegate_id")
     private User delegate;
 
+    private String attachmentUrl;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -76,5 +78,13 @@ public class Announcement {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getAttachmentUrl() {
+        return attachmentUrl;
+    }
+
+    public void setAttachmentUrl(String attachmentUrl) {
+        this.attachmentUrl = attachmentUrl;
     }
 }

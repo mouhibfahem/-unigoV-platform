@@ -2,10 +2,17 @@ import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import { Send, Search, Paperclip, MoreHorizontal, Smile, Check, CheckCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import EmojiPicker from 'emoji-picker-react';
 
 const MessagingPage = () => {
     const { user } = useAuth();
     const [message, setMessage] = useState('');
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+    const onEmojiClick = (emojiObject) => {
+        setMessage((prevMsg) => prevMsg + emojiObject.emoji);
+        setShowEmojiPicker(false);
+    };
 
     const contacts = [
         { id: 1, name: 'Admin Étudiant', role: 'Support', status: 'en ligne', lastMsg: 'J\'ai mis à jour le statut...', time: '2m', unread: 2 },
@@ -107,7 +114,19 @@ const MessagingPage = () => {
                     </div>
 
                     {/* Chat Input */}
-                    <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
+                    <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 relative">
+                        {showEmojiPicker && (
+                            <div className="absolute bottom-24 right-6 z-50">
+                                <EmojiPicker
+                                    onEmojiClick={onEmojiClick}
+                                    theme="auto"
+                                    searchDisabled
+                                    skinTonesDisabled
+                                    width={300}
+                                    height={400}
+                                />
+                            </div>
+                        )}
                         <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 p-2 rounded-2xl border border-transparent focus-within:border-primary-100 dark:focus-within:border-primary-900 transition-all">
                             <button className="p-2.5 text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-slate-700 rounded-xl transition-all">
                                 <Paperclip size={20} />
@@ -118,7 +137,10 @@ const MessagingPage = () => {
                                 placeholder="Écrivez votre message..."
                                 className="flex-1 bg-transparent border-none outline-none text-sm text-slate-700 dark:text-slate-200 placeholder-slate-400 h-10"
                             />
-                            <button className="p-2.5 text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-slate-700 rounded-xl transition-all">
+                            <button
+                                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                                className={`p-2.5 hover:bg-white dark:hover:bg-slate-700 rounded-xl transition-all ${showEmojiPicker ? 'text-primary-600 bg-white dark:bg-slate-700' : 'text-slate-400 hover:text-primary-600 dark:hover:text-primary-400'}`}
+                            >
                                 <Smile size={20} />
                             </button>
                             <button className="bg-primary-600 text-white p-2.5 rounded-xl hover:bg-primary-700 transition-all shadow-lg shadow-primary-200 dark:shadow-none scale-100 active:scale-95">

@@ -1,11 +1,16 @@
 package com.unigov.dto;
 
 import java.time.LocalDateTime;
+import org.springframework.web.multipart.MultipartFile;
+import jakarta.validation.constraints.NotBlank;
 
 public class AnnouncementDtos {
     public static class AnnouncementRequest {
+        @NotBlank
         private String title;
+        @NotBlank
         private String content;
+        private MultipartFile file;
 
         public String getTitle() {
             return title;
@@ -22,12 +27,21 @@ public class AnnouncementDtos {
         public void setContent(String content) {
             this.content = content;
         }
+
+        public MultipartFile getFile() {
+            return file;
+        }
+
+        public void setFile(MultipartFile file) {
+            this.file = file;
+        }
     }
 
     public static class AnnouncementResponse {
         private Long id;
         private String title;
         private String content;
+        private String attachmentUrl;
         private String delegateName;
         private LocalDateTime createdAt;
 
@@ -53,6 +67,14 @@ public class AnnouncementDtos {
 
         public void setContent(String content) {
             this.content = content;
+        }
+
+        public String getAttachmentUrl() {
+            return attachmentUrl;
+        }
+
+        public void setAttachmentUrl(String attachmentUrl) {
+            this.attachmentUrl = attachmentUrl;
         }
 
         public String getDelegateName() {
@@ -90,6 +112,11 @@ public class AnnouncementDtos {
 
             public Builder content(String content) {
                 instance.content = content;
+                return this;
+            }
+
+            public Builder attachmentUrl(String attachmentUrl) {
+                instance.attachmentUrl = attachmentUrl;
                 return this;
             }
 

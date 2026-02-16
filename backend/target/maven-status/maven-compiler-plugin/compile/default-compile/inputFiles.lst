@@ -1,8 +1,10 @@
+C:\Users\mouhi\Downloads\UniGov\backend\src\main\java\com\unigov\config\MvcConfig.java
 C:\Users\mouhi\Downloads\UniGov\backend\src\main\java\com\unigov\config\WebConfig.java
 C:\Users\mouhi\Downloads\UniGov\backend\src\main\java\com\unigov\controller\AnnouncementController.java
 C:\Users\mouhi\Downloads\UniGov\backend\src\main\java\com\unigov\controller\AuthController.java
 C:\Users\mouhi\Downloads\UniGov\backend\src\main\java\com\unigov\controller\ComplaintController.java
 C:\Users\mouhi\Downloads\UniGov\backend\src\main\java\com\unigov\controller\PollController.java
+C:\Users\mouhi\Downloads\UniGov\backend\src\main\java\com\unigov\controller\UserController.java
 C:\Users\mouhi\Downloads\UniGov\backend\src\main\java\com\unigov\DataInitializer.java
 C:\Users\mouhi\Downloads\UniGov\backend\src\main\java\com\unigov\dto\AnnouncementDtos.java
 C:\Users\mouhi\Downloads\UniGov\backend\src\main\java\com\unigov\dto\AuthDtos.java

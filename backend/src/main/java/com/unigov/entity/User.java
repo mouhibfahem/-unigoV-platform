@@ -34,6 +34,8 @@ public class User {
 
     private String fullName;
 
+    private String profilePhoto;
+
     public User() {
     }
 
@@ -92,5 +94,13 @@ public class User {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public String getProfilePhoto() {
+        return profilePhoto;
+    }
+
+    public void setProfilePhoto(String profilePhoto) {
+        this.profilePhoto = profilePhoto;
     }
 }

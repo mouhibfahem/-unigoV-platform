@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import {
@@ -13,6 +13,15 @@ import {
 } from 'lucide-react';
 
 const HomePage = () => {
+    const [currentSlide, setCurrentSlide] = useState(0);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentSlide((prev) => (prev + 1) % 2);
+        }, 5000);
+        return () => clearInterval(timer);
+    }, []);
+
     const quickActions = [
         {
             title: 'Réclamations',
@@ -51,25 +60,57 @@ const HomePage = () => {
     return (
         <DashboardLayout title="Accueil">
             <div className="max-w-6xl mx-auto space-y-10">
-                {/* Hero Banner */}
-                <div className="relative overflow-hidden rounded-[2rem] text-white shadow-2xl shadow-primary-500/20" style={{ minHeight: '420px' }}>
-                    {/* Background Image — clearly visible */}
-                    <div
-                        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                        style={{ backgroundImage: 'url(/hero-bg.jpg)' }}
-                    />
-                    {/* Light overlay — photo stays visible */}
-                    <div className="absolute inset-0 bg-primary-900/30" />
-                    {/* Bottom gradient only — text area */}
-                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-primary-900/90 via-primary-900/60 to-transparent" />
-                    {/* Content — positioned at bottom */}
-                    <div className="absolute inset-x-0 bottom-0 p-10 z-10">
-                        <div className="max-w-2xl">
-                            <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tight drop-shadow-lg">Bienvenue sur UniGov !</h1>
-                            <p className="text-lg md:text-xl text-white/90 leading-relaxed font-medium drop-shadow-md">
-                                Plateforme digitale de communication et de gouvernance étudiante. Exprimez vos réclamations, consultez les annonces, participez aux sondages et bien plus.
-                            </p>
+                {/* Hero Banner Carousel */}
+                <div className="relative overflow-hidden rounded-[2rem] text-white shadow-2xl shadow-primary-500/20" style={{ minHeight: '550px' }}>
+                    {/* Slides */}
+                    {[
+                        {
+                            image: '/hero-bg.jpg',
+                            title: 'Bienvenue sur EniGov !',
+                            text: 'Plateforme digitale de communication et de gouvernance étudiante. Exprimez vos réclamations, consultez les annonces, participez aux sondages et bien plus.',
+                        },
+                        {
+                            image: '/hero-bg-2.jpg',
+                            title: 'Vos Délégués à votre écoute',
+                            text: 'Mouhib Fahem & Wiem Tamboura',
+                        }
+                    ].map((slide, index) => (
+                        <div
+                            key={index}
+                            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${currentSlide === index ? 'opacity-100' : 'opacity-0'}`}
+                            style={{ pointerEvents: currentSlide === index ? 'auto' : 'none' }}
+                        >
+                            <div
+                                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                                style={{ backgroundImage: `url(${slide.image})` }}
+                            />
+                            {/* Overlay */}
+                            <div className="absolute inset-0 bg-primary-900/30" />
+                            {/* Bottom gradient */}
+                            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-primary-900/90 via-primary-900/60 to-transparent" />
+
+                            {/* Content */}
+                            <div className="absolute inset-x-0 bottom-0 p-10 z-10 pb-20">
+                                <div className="max-w-3xl">
+                                    <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tight drop-shadow-lg">{slide.title}</h1>
+                                    <p className="text-lg md:text-2xl text-white/95 leading-relaxed font-bold drop-shadow-md">
+                                        {slide.text}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
+                    ))}
+
+                    {/* Indicators */}
+                    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+                        {[0, 1].map((index) => (
+                            <button
+                                key={index}
+                                onClick={() => setCurrentSlide(index)}
+                                className={`h-3 rounded-full transition-all duration-300 shadow-sm ${currentSlide === index ? 'bg-white w-8' : 'bg-white/50 w-3 hover:bg-white/80'}`}
+                                aria-label={`Go to slide ${index + 1}`}
+                            />
+                        ))}
                     </div>
                 </div>
 

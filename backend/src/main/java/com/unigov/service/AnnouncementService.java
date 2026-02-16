@@ -19,6 +19,9 @@ public class AnnouncementService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private FileStorageService fileStorageService;
+
     public AnnouncementResponse createAnnouncement(AnnouncementRequest request, String username) {
         User delegate = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -27,6 +30,11 @@ public class AnnouncementService {
         announcement.setTitle(request.getTitle());
         announcement.setContent(request.getContent());
         announcement.setDelegate(delegate);
+
+        if (request.getFile() != null && !request.getFile().isEmpty()) {
+            String fileName = fileStorageService.storeFile(request.getFile());
+            announcement.setAttachmentUrl(fileName);
+        }
 
         Announcement saved = announcementRepository.save(announcement);
         return mapToResponse(saved);
@@ -43,6 +51,7 @@ public class AnnouncementService {
                 .id(a.getId())
                 .title(a.getTitle())
                 .content(a.getContent())
+                .attachmentUrl(a.getAttachmentUrl())
                 .delegateName(a.getDelegate().getFullName())
                 .createdAt(a.getCreatedAt())
                 .build();

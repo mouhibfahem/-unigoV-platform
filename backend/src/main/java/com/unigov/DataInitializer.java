@@ -31,7 +31,11 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (userRepository.count() == 0) {
+        // 1. Initialize Users
+        logger.info("Checking for default users...");
+
+        // Admin
+        if (userRepository.findByUsername("admin").isEmpty()) {
             User admin = new User();
             admin.setUsername("admin");
             admin.setEmail("admin@unigov.com");
@@ -39,15 +43,35 @@ public class DataInitializer implements CommandLineRunner {
             admin.setFullName("Administrator");
             admin.setRole(Role.ROLE_ADMIN);
             userRepository.save(admin);
+            logger.info("Admin account created.");
+        }
 
-            User delegue = new User();
-            delegue.setUsername("mouhib_fahem");
-            delegue.setEmail("mouhib.fahem28@gmail.com");
-            delegue.setPassword(passwordEncoder.encode("mouhib"));
-            delegue.setFullName("Mouhib Fahem");
-            delegue.setRole(Role.ROLE_DELEGUE);
-            userRepository.save(delegue);
+        // Delegate 1: Mouhib Fahem
+        if (userRepository.findByUsername("mouhib_fahem").isEmpty()) {
+            User delegue1 = new User();
+            delegue1.setUsername("mouhib_fahem");
+            delegue1.setEmail("mouhib.fahem28@gmail.com");
+            delegue1.setPassword(passwordEncoder.encode("mouhib"));
+            delegue1.setFullName("Mouhib Fahem");
+            delegue1.setRole(Role.ROLE_DELEGUE);
+            userRepository.save(delegue1);
+            logger.info("Delegate 'mouhib_fahem' created.");
+        }
 
+        // Delegate 2: Wiem Tamboura
+        if (userRepository.findByUsername("wiem_tamboura").isEmpty()) {
+            User delegue2 = new User();
+            delegue2.setUsername("wiem_tamboura");
+            delegue2.setEmail("wiem.tamboura@unigov.com");
+            delegue2.setPassword(passwordEncoder.encode("wiem"));
+            delegue2.setFullName("Wiem Tamboura");
+            delegue2.setRole(Role.ROLE_DELEGUE);
+            userRepository.save(delegue2);
+            logger.info("Delegate 'wiem_tamboura' created.");
+        }
+
+        // Student
+        if (userRepository.findByUsername("etudiant1").isEmpty()) {
             User student = new User();
             student.setUsername("etudiant1");
             student.setEmail("etudiant@unigov.com");
@@ -55,15 +79,10 @@ public class DataInitializer implements CommandLineRunner {
             student.setFullName("Etudiant Amri Mahmoud");
             student.setRole(Role.ROLE_STUDENT);
             userRepository.save(student);
-
-            logger.info("=== Default accounts created ===");
-            logger.info("Admin:    admin / admin123");
-            logger.info("Delegue:  mouhib_fahem / mouhib");
-            logger.info("Student:  etudiant1 / etudiant123");
-            logger.info("================================");
-        } else {
-            logger.info("Users already exist, skipping user creation.");
+            logger.info("Student account created.");
         }
+
+        logger.info("=== User Initialization Complete ===");
 
         // Seed Complaints if none exist
         if (complaintRepository.count() == 0) {

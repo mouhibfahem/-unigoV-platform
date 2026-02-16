@@ -30,8 +30,14 @@ export const AuthProvider = ({ children }) => {
         return await api.post('/auth/signup', userData);
     };
 
+    const updateUser = (userData) => {
+        const updatedUser = { ...user, ...userData };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+    };
+
     return (
-        <AuthContext.Provider value={{ user, login, logout, register }}>
+        <AuthContext.Provider value={{ user, login, logout, register, updateUser }}>
             {children}
         </AuthContext.Provider>
     );

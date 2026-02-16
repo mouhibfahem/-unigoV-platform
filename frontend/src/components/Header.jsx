@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Bell, Search, User, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -35,21 +36,25 @@ const Header = ({ title }) => {
                 </div>
                 <div className="h-8 w-[1px] bg-slate-100 mx-2"></div>
 
-                <div className="flex items-center gap-3 pl-2">
+                <Link to="/settings" className="flex items-center gap-3 pl-2 group/profile cursor-pointer">
                     <div className="text-right hidden sm:block">
-                        <p className="text-sm font-bold text-slate-800 leading-none">{user?.fullName}</p>
+                        <p className="text-sm font-bold text-slate-800 dark:text-slate-200 leading-none group-hover/profile:text-primary-600 transition-colors">{user?.fullName}</p>
                         <p className="text-[10px] font-bold text-primary-500 uppercase tracking-wider mt-1">
-                            {user?.role === 'ROLE_ADMIN' ? 'Administrateur' :
-                                user?.role === 'ROLE_STUDENT' ? 'Étudiant' :
-                                    user?.role === 'ROLE_DELEGUE' ? 'Délégué' :
-                                        user?.role?.replace('ROLE_', '')}
+                            {user?.username || (user?.role === 'ROLE_ADMIN' ? 'Administrateur' : 'Étudiant')}
                         </p>
                     </div>
-                    <div className="w-10 h-10 bg-primary-100 text-primary-600 rounded-xl flex items-center justify-center font-bold relative overflow-hidden group cursor-pointer hover:shadow-md transition-all">
-                        <User size={20} />
-                        <div className="absolute inset-0 bg-primary-600 opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                    <div className="w-10 h-10 bg-primary-100 text-primary-600 rounded-xl flex items-center justify-center font-bold relative overflow-hidden group-hover/profile:shadow-md group-hover/profile:bg-primary-600 group-hover/profile:text-white transition-all">
+                        {user?.profilePhoto ? (
+                            <img
+                                src={user.profilePhoto.startsWith('http') ? user.profilePhoto : `http://localhost:8081/uploads/${user.profilePhoto}`}
+                                alt="Profile"
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <User size={20} />
+                        )}
                     </div>
-                </div>
+                </Link>
             </div>
         </header>
     );
