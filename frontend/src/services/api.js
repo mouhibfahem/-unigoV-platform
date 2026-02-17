@@ -1,7 +1,17 @@
 import axios from 'axios';
 
+const getBaseUrl = () => {
+    if (import.meta.env.VITE_API_URL) {
+        return import.meta.env.VITE_API_URL;
+    }
+    if (import.meta.env.MODE === 'production') {
+        return 'https://unigov-platform-production.up.railway.app/api';
+    }
+    return 'http://localhost:8081/api';
+};
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8081/api',
+    baseURL: getBaseUrl(),
 });
 
 console.log('API Base URL:', api.defaults.baseURL);
