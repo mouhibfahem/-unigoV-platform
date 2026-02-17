@@ -52,3 +52,6 @@ dist/
 coverage/
 .env
 .DS_Store
+
+# MongoDB local data
+data/

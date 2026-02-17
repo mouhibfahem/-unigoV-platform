@@ -17,7 +17,7 @@ import Logo from './Logo';
 import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
-    const { logout } = useAuth();
+    const { user, logout } = useAuth();
     const location = useLocation();
 
     const menuGroups = [
