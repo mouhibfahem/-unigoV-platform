@@ -175,7 +175,7 @@ const HomePage = () => {
                 <div className="space-y-6">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h2 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight">Agenda UniGov</h2>
+                            <h2 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight">Agenda EniGov</h2>
                             <p className="text-slate-500 font-bold text-sm">Ne manquez aucun événement important</p>
                         </div>
                     </div>

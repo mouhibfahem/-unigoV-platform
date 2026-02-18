@@ -93,7 +93,7 @@ const Sidebar = () => {
                 ))}
             </nav>
 
-            <div className="p-4 border-t border-slate-100 dark:border-slate-800 mt-auto">
+            <div className="p-6 border-t border-slate-100 dark:border-slate-800 mt-auto space-y-4">
                 <button
                     onClick={logout}
                     className="flex items-center gap-3 px-4 py-3 w-full rounded-xl font-bold text-slate-500 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-red-600 transition-all text-sm"
@@ -101,6 +101,29 @@ const Sidebar = () => {
                     <LogOut size={18} />
                     <span>Déconnexion</span>
                 </button>
+
+                <div className="px-4 py-2 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+                    <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-center">
+                        © 2026 EniGov Platform
+                    </p>
+                    <p className="text-[9px] font-medium text-slate-400 dark:text-slate-500 text-center mt-1">
+                        Développé par <span className="text-primary-500 font-bold">Fahem Mouhib</span>
+                    </p>
+                    <p className="text-[8px] text-slate-300 dark:text-slate-600 text-center mt-0.5">
+                        École Nationale d'Ingénieurs de Carthage
+                    </p>
+                </div>
+
+                <div className="flex justify-center pt-2 transition-all duration-300">
+                    <img
+                        src="/enicarthage_logo.jpg"
+                        alt="ENICarthage"
+                        className="h-10 w-auto object-contain"
+                        onError={(e) => {
+                            e.target.src = "https://upload.wikimedia.org/wikipedia/fr/b/b1/Logo_ENICarthage.png";
+                        }}
+                    />
+                </div>
             </div>
         </aside>
     );

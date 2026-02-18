@@ -10,14 +10,14 @@ import org.springframework.data.mongodb.config.EnableMongoAuditing;
 
 @EnableMongoAuditing
 @SpringBootApplication(exclude = {
-        DataSourceAutoConfiguration.class,
-        HibernateJpaAutoConfiguration.class,
-        TransactionAutoConfiguration.class
+		DataSourceAutoConfiguration.class,
+		HibernateJpaAutoConfiguration.class,
+		TransactionAutoConfiguration.class
 })
-public class UniGovApplication {
+public class EniGovApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(UniGovApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(EniGovApplication.class, args);
+	}
 
 }

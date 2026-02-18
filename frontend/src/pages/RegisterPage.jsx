@@ -59,7 +59,7 @@ const RegisterPage = () => {
                         <Logo className="scale-125" textColor="text-slate-800 dark:text-slate-100" />
                     </div>
                     <h1 className="text-3xl font-bold text-slate-800 dark:text-white tracking-tight">Créer un compte</h1>
-                    <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium">Rejoignez la plateforme UniGov</p>
+                    <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium">Rejoignez la plateforme EniGov</p>
                 </div>
 
                 {error && (

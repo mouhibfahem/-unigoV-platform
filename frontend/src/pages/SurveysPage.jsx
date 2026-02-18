@@ -35,7 +35,7 @@ const SurveysPage = () => {
         },
         {
             id: 3,
-            title: "Feedback - Nouvelle Plateforme UniGov",
+            title: "Feedback - Nouvelle Plateforme EniGov",
             description: "Que pensez-vous du nouvel outil numérique ? Vos suggestions pour les futures mises à jour.",
             status: "COMPLETED",
             deadline: "10 Février 2026",
@@ -72,8 +72,8 @@ const SurveysPage = () => {
                                         <ClipboardList size={28} />
                                     </div>
                                     <span className={`px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${survey.status === 'ACTIVE'
-                                            ? 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20'
-                                            : 'bg-slate-50 text-slate-400 border-slate-100 dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700'
+                                        ? 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20'
+                                        : 'bg-slate-50 text-slate-400 border-slate-100 dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700'
                                         }`}>
                                         {survey.status === 'ACTIVE' ? 'En cours' : 'Terminé'}
                                     </span>

@@ -1,9 +1,9 @@
-# 📊 Rapport Global - Plateforme UniGov
+# 📊 Rapport Global - Plateforme EniGov
 
-Ce rapport présente l'architecture technique, les outils et l'état actuel de la plateforme UniGov.
+Ce rapport présente l'architecture technique, les outils et l'état actuel de la plateforme EniGov.
 
 ## 🏗️ Architecture Globale
-UniGov suit une architecture **Découplée (Decoupled)** avec un frontend moderne communiquant via une API REST avec un backend robuste.
+EniGov suit une architecture **Découplée (Decoupled)** avec un frontend moderne communiquant via une API REST avec un backend robuste.
 
 ```mermaid
 graph LR
