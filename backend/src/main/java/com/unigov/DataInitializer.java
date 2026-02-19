@@ -65,6 +65,7 @@ public class DataInitializer implements CommandLineRunner {
             admin.setEmail("admin@unigov.com");
             admin.setPassword(passwordEncoder.encode("admin123"));
             admin.setFullName("Administrator");
+            admin.setDepartment("Direction Générale");
             admin.setRole(Role.ROLE_ADMIN);
             userRepository.save(admin);
             logger.info("Admin account created.");
@@ -77,6 +78,7 @@ public class DataInitializer implements CommandLineRunner {
             delegue1.setEmail("mouhib.fahem28@gmail.com");
             delegue1.setPassword(passwordEncoder.encode("mouhib"));
             delegue1.setFullName("Mouhib Fahem");
+            delegue1.setDepartment("Informatique");
             delegue1.setRole(Role.ROLE_DELEGUE);
             userRepository.save(delegue1);
             logger.info("Delegate 'mouhib_fahem' created.");
@@ -89,6 +91,7 @@ public class DataInitializer implements CommandLineRunner {
             delegue2.setEmail("wiem.tamboura@unigov.com");
             delegue2.setPassword(passwordEncoder.encode("wiem"));
             delegue2.setFullName("Wiem Tamboura");
+            delegue2.setDepartment("Génie Industriel");
             delegue2.setRole(Role.ROLE_DELEGUE);
             userRepository.save(delegue2);
             logger.info("Delegate 'wiem_tamboura' created.");
@@ -101,6 +104,7 @@ public class DataInitializer implements CommandLineRunner {
             student.setEmail("etudiant@unigov.com");
             student.setPassword(passwordEncoder.encode("etudiant123"));
             student.setFullName("Etudiant Amri Mahmoud");
+            student.setDepartment("Génie Mécatronique");
             student.setRole(Role.ROLE_STUDENT);
             userRepository.save(student);
             logger.info("Student account created.");
@@ -119,6 +123,7 @@ public class DataInitializer implements CommandLineRunner {
                 c1.setDescription(
                         "L'état de la buvette de l'annexe est déplorable. Hygiène douteuse et manque de choix.");
                 c1.setCategory("Infrastructure");
+                c1.setLocation("Annexe, Buvette");
                 c1.setPriority(com.unigov.entity.ComplaintEnums.ComplaintPriority.HIGH);
                 c1.setStatus(com.unigov.entity.ComplaintEnums.ComplaintStatus.PENDING);
                 c1.setStudent(student);
@@ -130,6 +135,7 @@ public class DataInitializer implements CommandLineRunner {
                 c2.setDescription(
                         "Les notes devaient être affichées le 25/02 comme prévu par le règlement. Le retard est inacceptable.");
                 c2.setCategory("Exams");
+                c2.setLocation("Bloc Central, Salle 5");
                 c2.setPriority(com.unigov.entity.ComplaintEnums.ComplaintPriority.URGENT);
                 c2.setStatus(com.unigov.entity.ComplaintEnums.ComplaintStatus.IN_PROGRESS);
                 c2.setStudent(student);

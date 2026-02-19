@@ -44,6 +44,13 @@ api.createAnnouncement = (formData) => api.post('/announcements', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
 });
 
+// Complaints
+api.getComplaints = () => api.get('/complaints');
+api.getMyComplaints = () => api.get('/complaints/my');
+api.getComplaintById = (id) => api.get(`/complaints/${id}`);
+api.updateComplaint = (id, data) => api.put(`/complaints/${id}`, data);
+api.deleteComplaint = (id) => api.delete(`/complaints/${id}`);
+
 // Polls
 api.getPolls = () => api.get('/polls');
 api.createPoll = (data) => api.post('/polls', data);

@@ -29,6 +29,7 @@ public class ComplaintController {
             @RequestParam("title") String title,
             @RequestParam("description") String description,
             @RequestParam("category") String category,
+            @RequestParam(value = "location", required = false) String location,
             @RequestParam(value = "priority", defaultValue = "MEDIUM") ComplaintPriority priority,
             @RequestPart(value = "file", required = false) MultipartFile file,
             Principal principal) {
@@ -37,6 +38,7 @@ public class ComplaintController {
         request.setTitle(title);
         request.setDescription(description);
         request.setCategory(category);
+        request.setLocation(location);
         request.setPriority(priority);
 
         String attachmentPath = null;
@@ -56,6 +58,12 @@ public class ComplaintController {
     @PreAuthorize("hasAnyRole('DELEGUE', 'ADMIN')")
     public ResponseEntity<List<ComplaintResponse>> getAllComplaints() {
         return ResponseEntity.ok(complaintService.getAllComplaints());
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('STUDENT', 'DELEGUE', 'ADMIN')")
+    public ResponseEntity<ComplaintResponse> getComplaintById(@PathVariable String id) {
+        return ResponseEntity.ok(complaintService.getComplaintById(id));
     }
 
     @PutMapping("/{id}")

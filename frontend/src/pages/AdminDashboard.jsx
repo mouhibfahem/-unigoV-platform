@@ -10,8 +10,19 @@ import {
     TrendingUp, Activity, PieChart as PieIcon
 } from 'lucide-react';
 
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+
 const AdminDashboard = () => {
+    const { user } = useAuth();
+    const navigate = useNavigate();
     const [loading, setLoading] = React.useState(true);
+
+    React.useEffect(() => {
+        if (user?.role === 'ROLE_STUDENT') {
+            navigate('/dashboard');
+        }
+    }, [user, navigate]);
 
     React.useEffect(() => {
         // Simulate data fetching

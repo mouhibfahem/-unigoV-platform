@@ -39,6 +39,7 @@ public class ComplaintService {
         complaint.setTitle(request.getTitle());
         complaint.setDescription(request.getDescription());
         complaint.setCategory(request.getCategory());
+        complaint.setLocation(request.getLocation());
         complaint.setPriority(request.getPriority() != null ? request.getPriority() : ComplaintPriority.MEDIUM);
         complaint.setStatus(ComplaintStatus.PENDING);
         complaint.setStudent(student);
@@ -62,6 +63,13 @@ public class ComplaintService {
         return complaintRepository.findAll().stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public ComplaintResponse getComplaintById(String id) {
+        Complaint complaint = complaintRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Complaint not found"));
+        return mapToResponse(complaint);
     }
 
     @Transactional
@@ -110,9 +118,11 @@ public class ComplaintService {
                 .title(complaint.getTitle())
                 .description(complaint.getDescription())
                 .category(complaint.getCategory())
+                .location(complaint.getLocation())
                 .status(complaint.getStatus())
                 .priority(complaint.getPriority())
                 .studentName(complaint.getStudent().getFullName())
+                .studentDepartment(complaint.getStudent().getDepartment())
                 .response(complaint.getResponse())
                 .attachmentPath(complaint.getAttachmentPath())
                 .createdAt(complaint.getCreatedAt())

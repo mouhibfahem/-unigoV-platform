@@ -9,7 +9,10 @@ import {
     Star
 } from 'lucide-react';
 
+import { useAuth } from '../context/AuthContext';
+
 const SurveysPage = () => {
+    const { user } = useAuth();
     const surveys = [
         {
             id: 1,
@@ -127,19 +130,21 @@ const SurveysPage = () => {
                         </div>
                     ))}
 
-                    {/* Proposal Card */}
-                    <div className="relative group p-8 rounded-[2.5rem] bg-slate-50 dark:bg-[#1a1c2e]/50 border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center text-center gap-4 hover:bg-white dark:hover:bg-[#1a1c2e] hover:border-primary-500/30 transition-all">
-                        <div className="w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-500/10 flex items-center justify-center text-primary-600">
-                            <Star size={32} />
+                    {/* Proposal Card - Restricted to Delegates/Admins */}
+                    {(user?.role === 'ROLE_DELEGUE' || user?.role === 'ROLE_ADMIN') && (
+                        <div className="relative group p-8 rounded-[2.5rem] bg-slate-50 dark:bg-[#1a1c2e]/50 border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center text-center gap-4 hover:bg-white dark:hover:bg-[#1a1c2e] hover:border-primary-500/30 transition-all shadow-sm shadow-slate-100 dark:shadow-none">
+                            <div className="w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-500/10 flex items-center justify-center text-primary-600">
+                                <Star size={32} />
+                            </div>
+                            <h4 className="text-xl font-black text-slate-800 dark:text-white">Suggérer une enquête</h4>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium max-w-[250px]">
+                                Vous avez un sujet qui mérite l'attention de tous ? Proposez une nouvelle enquête.
+                            </p>
+                            <button className="mt-4 px-8 py-3 bg-white dark:bg-slate-800 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 rounded-2xl font-black text-xs uppercase tracking-widest hover:border-primary-500 transition-all">
+                                Proposer
+                            </button>
                         </div>
-                        <h4 className="text-xl font-black text-slate-800 dark:text-white">Suggérer une enquête</h4>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium max-w-[250px]">
-                            Vous avez un sujet qui mérite l'attention de tous ? Proposez une nouvelle enquête.
-                        </p>
-                        <button className="mt-4 px-8 py-3 bg-white dark:bg-slate-800 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 rounded-2xl font-black text-xs uppercase tracking-widest hover:border-primary-500 transition-all">
-                            Proposer
-                        </button>
-                    </div>
+                    )}
                 </div>
             </div>
         </DashboardLayout>

@@ -31,6 +31,8 @@ public class Complaint {
 
     private String attachmentPath;
 
+    private String location;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
@@ -38,7 +40,7 @@ public class Complaint {
     public Complaint() {
     }
 
-    public Complaint(String id, String title, String description, String category,
+    public Complaint(String id, String title, String description, String category, String location,
             ComplaintEnums.ComplaintStatus status,
             ComplaintEnums.ComplaintPriority priority, User student, String response, String attachmentPath,
             LocalDateTime createdAt, LocalDateTime updatedAt) {
@@ -46,6 +48,7 @@ public class Complaint {
         this.title = title;
         this.description = description;
         this.category = category;
+        this.location = location;
         this.status = status;
         this.priority = priority;
         this.student = student;
@@ -141,5 +144,13 @@ public class Complaint {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

@@ -15,6 +15,7 @@ import SettingsPage from './pages/SettingsPage';
 import HomePage from './pages/HomePage';
 import DecisionsPage from './pages/DecisionsPage';
 import SurveysPage from './pages/SurveysPage';
+import ComplaintDetailPage from './pages/ComplaintDetailPage';
 import AdminDashboard from './pages/AdminDashboard';
 import './styles/index.css';
 
@@ -50,6 +51,11 @@ const AnimatedRoutes = () => {
                 <Route path="/complaints" element={
                     <ProtectedRoute>
                         <PageTransition><ComplaintsPage /></PageTransition>
+                    </ProtectedRoute>
+                } />
+                <Route path="/complaints/:id" element={
+                    <ProtectedRoute>
+                        <PageTransition><ComplaintDetailPage /></PageTransition>
                     </ProtectedRoute>
                 } />
                 <Route path="/announcements" element={

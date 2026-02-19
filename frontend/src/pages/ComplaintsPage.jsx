@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -17,12 +18,14 @@ import {
 } from 'lucide-react';
 
 const ComplaintsPage = () => {
+    const navigate = useNavigate();
     const [complaints, setComplaints] = useState([]);
     const [showForm, setShowForm] = useState(false);
     const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({
         title: '',
-        category: 'Examens',
+        category: 'Infrastructure',
+        location: '',
         description: '',
         priority: 'MEDIUM'
     });
@@ -52,6 +55,7 @@ const ComplaintsPage = () => {
             data.append('title', formData.title);
             data.append('description', formData.description);
             data.append('category', formData.category);
+            data.append('location', formData.location);
             data.append('priority', formData.priority);
 
             if (file) {
@@ -61,7 +65,7 @@ const ComplaintsPage = () => {
             await api.post('/complaints', data);
 
             setShowForm(false);
-            setFormData({ title: '', category: 'Examens', description: '', priority: 'MEDIUM' });
+            setFormData({ title: '', category: 'Infrastructure', location: '', description: '', priority: 'MEDIUM' });
             setFile(null);
             fetchComplaints();
         } catch (err) {
@@ -152,7 +156,7 @@ const ComplaintsPage = () => {
                     {user?.role === 'ROLE_STUDENT' && (
                         <button
                             onClick={() => setShowForm(true)}
-                            className="btn-primary flex items-center gap-2"
+                            className="btn-primary flex items-center gap-2 shadow-lg shadow-primary-200 dark:shadow-none"
                         >
                             <Plus size={18} />
                             <span>Nouvelle Réclamation</span>
@@ -187,11 +191,13 @@ const ComplaintsPage = () => {
                                             value={formData.category}
                                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                         >
-                                            <option value="Examens">Examens</option>
-                                            <option value="Absences">Absences</option>
-                                            <option value="Infrastructure">Infrastructure</option>
-                                            <option value="Discipline">Discipline</option>
-                                            <option value="Others">Autres</option>
+                                            <option value="Infrastructure">Infrastructure & Locaux</option>
+                                            <option value="Académique">Pédagogie & Académique</option>
+                                            <option value="Examens">Examens & Notes</option>
+                                            <option value="Vie Étudiante">Vie Étudiante & Clubs</option>
+                                            <option value="Restauration">Restauration (Buvette)</option>
+                                            <option value="Administratif">Services Administratifs</option>
+                                            <option value="Autre">Autre</option>
                                         </select>
                                     </div>
                                     <div className="space-y-1">
@@ -206,6 +212,15 @@ const ComplaintsPage = () => {
                                             <option value="HIGH">Haute</option>
                                             <option value="URGENT">Urgente</option>
                                         </select>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Localisation (ex: Bloc A, Bibliothèque...)</label>
+                                        <input
+                                            className="input"
+                                            value={formData.location}
+                                            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                                            placeholder="Où se situe le problème ?"
+                                        />
                                     </div>
                                 </div>
                                 <div className="space-y-1">
@@ -263,7 +278,11 @@ const ComplaintsPage = () => {
                         </div>
                     ) : (
                         complaints.map((complaint) => (
-                            <div key={complaint.id} className="card hover:shadow-md transition-all group">
+                            <div
+                                key={complaint.id}
+                                onClick={() => navigate(`/complaints/${complaint.id}`)}
+                                className="card hover:shadow-md transition-all group cursor-pointer"
+                            >
                                 <div className="flex items-start justify-between">
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-3">
@@ -295,27 +314,27 @@ const ComplaintsPage = () => {
                                                     </a>
                                                 </>
                                             )}
-                                            {user.role !== 'ROLE_STUDENT' && (
+                                            {user.role === 'ROLE_DELEGUE' || user.role === 'ROLE_ADMIN' ? (
                                                 <>
                                                     <span>•</span>
-                                                    <span className="text-primary-600 dark:text-primary-400 font-bold">Par {complaint.studentName}</span>
+                                                    <span className="text-primary-600 dark:text-primary-400 font-bold uppercase tracking-wider">Par {complaint.studentName}</span>
                                                 </>
-                                            )}
+                                            ) : null}
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        {user.role !== 'ROLE_STUDENT' && complaint.status !== 'RESOLVED' && (
+                                        {(user.role === 'ROLE_DELEGUE' || user.role === 'ROLE_ADMIN') && complaint.status !== 'RESOLVED' && (
                                             <button
-                                                onClick={() => handleResolve(complaint.id)}
+                                                onClick={(e) => { e.stopPropagation(); handleResolve(complaint.id); }}
                                                 className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                                                 title="Marquer comme résolue"
                                             >
                                                 <Check size={18} />
                                             </button>
                                         )}
-                                        {user.role !== 'ROLE_STUDENT' && (
+                                        {(user.role === 'ROLE_DELEGUE' || user.role === 'ROLE_ADMIN') && (
                                             <button
-                                                onClick={() => handleDelete(complaint.id)}
+                                                onClick={(e) => { e.stopPropagation(); handleDelete(complaint.id); }}
                                                 className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                                 title="Supprimer"
                                             >

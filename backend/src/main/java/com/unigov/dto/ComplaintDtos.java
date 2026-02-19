@@ -9,6 +9,7 @@ public class ComplaintDtos {
         private String title;
         private String description;
         private String category;
+        private String location;
         private ComplaintPriority priority;
 
         public String getTitle() {
@@ -42,6 +43,14 @@ public class ComplaintDtos {
         public void setPriority(ComplaintPriority priority) {
             this.priority = priority;
         }
+
+        public String getLocation() {
+            return location;
+        }
+
+        public void setLocation(String location) {
+            this.location = location;
+        }
     }
 
     public static class ComplaintResponse {
@@ -49,9 +58,11 @@ public class ComplaintDtos {
         private String title;
         private String description;
         private String category;
+        private String location;
         private ComplaintStatus status;
         private ComplaintPriority priority;
         private String studentName;
+        private String studentDepartment;
         private String response;
         private String attachmentPath;
         private LocalDateTime createdAt;
@@ -88,6 +99,14 @@ public class ComplaintDtos {
             this.category = category;
         }
 
+        public String getLocation() {
+            return location;
+        }
+
+        public void setLocation(String location) {
+            this.location = location;
+        }
+
         public ComplaintStatus getStatus() {
             return status;
         }
@@ -110,6 +129,14 @@ public class ComplaintDtos {
 
         public void setStudentName(String studentName) {
             this.studentName = studentName;
+        }
+
+        public String getStudentDepartment() {
+            return studentDepartment;
+        }
+
+        public void setStudentDepartment(String studentDepartment) {
+            this.studentDepartment = studentDepartment;
         }
 
         public String getResponse() {
@@ -163,6 +190,11 @@ public class ComplaintDtos {
                 return this;
             }
 
+            public Builder location(String location) {
+                instance.location = location;
+                return this;
+            }
+
             public Builder status(ComplaintStatus status) {
                 instance.status = status;
                 return this;
@@ -175,6 +207,11 @@ public class ComplaintDtos {
 
             public Builder studentName(String studentName) {
                 instance.studentName = studentName;
+                return this;
+            }
+
+            public Builder studentDepartment(String studentDepartment) {
+                instance.studentDepartment = studentDepartment;
                 return this;
             }
 

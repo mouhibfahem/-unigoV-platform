@@ -33,16 +33,20 @@ public class User {
 
     private String profilePhoto;
 
+    private String department;
+
     public User() {
     }
 
-    public User(String id, String username, String email, String password, Role role, String fullName) {
+    public User(String id, String username, String email, String password, Role role, String fullName,
+            String department) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.role = role;
         this.fullName = fullName;
+        this.department = department;
     }
 
     public String getId() {
@@ -99,5 +103,13 @@ public class User {
 
     public void setProfilePhoto(String profilePhoto) {
         this.profilePhoto = profilePhoto;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
     }
 }

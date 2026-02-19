@@ -7,7 +7,10 @@ import {
     Paperclip, Eye, X, UploadCloud, Check
 } from 'lucide-react';
 
+import { useAuth } from '../context/AuthContext';
+
 const AnnouncementsPage = () => {
+    const { user } = useAuth();
     const [isCreating, setIsCreating] = useState(false);
     const [announcements, setAnnouncements] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -151,12 +154,14 @@ const AnnouncementsPage = () => {
                         <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Fil d'actualité</h1>
                         <p className="text-slate-500">Dernières nouvelles de l'université</p>
                     </div>
-                    <button
-                        onClick={() => setIsCreating(true)}
-                        className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors shadow-lg shadow-primary-200 dark:shadow-none"
-                    >
-                        <Plus size={20} /> Nouvelle Annonce
-                    </button>
+                    {(user?.role === 'ROLE_DELEGUE' || user?.role === 'ROLE_ADMIN') && (
+                        <button
+                            onClick={() => setIsCreating(true)}
+                            className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors shadow-lg shadow-primary-200 dark:shadow-none"
+                        >
+                            <Plus size={20} /> Nouvelle Annonce
+                        </button>
+                    )}
                 </div>
             )}
 
